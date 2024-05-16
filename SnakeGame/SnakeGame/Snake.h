@@ -7,7 +7,7 @@
 #include "SDL_ttf.h"
 #include "iostream"
 
-#define GRID 50
+#define GRID 20
 
 
 extern Uint32 g_frame_per_sec;
@@ -58,6 +58,7 @@ private:
 	int snakeLength; //snake 길이 -> 시작은 1
 	int direction;
 	Node* prevNode;
+	Node* temp;
 
 public:
 	Snake();
@@ -81,11 +82,11 @@ public:
 	void eatItem(int itemPower);
 	void move();
 	
-	
+	Node* nextCoordinate(int dircetion);
 	//아이템 획득 여부 확인 메서드
-	bool isCollidingItem(Item* item);
+	bool isCollidingItem(Item* item, int direction);
 	//자신의 몸과 충돌했는지 확인
-	bool isCollidingSelf();
+	bool isCollidingSelf(int direction);
 	//벽과 충돌했는지 확인
-	bool isColldingWall();
+	bool isColldingWall(int direction);
 };

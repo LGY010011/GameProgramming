@@ -18,7 +18,9 @@ int main(int argc, char* argv[]) {
 	SDL_Init(SDL_INIT_EVERYTHING);
 	TTF_Init();
 
-	window = SDL_CreateWindow("Snake Game", 100, 100, 1000, 700, 0);
+	//윈도우 크기 픽셀 : 1060x700 => 53x35
+	//wdith 3칸은 텍스트 출력에 쓸 거
+	window = SDL_CreateWindow("Snake Game", 100, 100, 1100, 700, 0);
 	g_renderer = SDL_CreateRenderer(window, -1, 0);
 	SDL_GetWindowSize(window, &screenWidth, &screenHeight);//크기 지정
 	// 렌더러의 드로우 색상을 검정색으로 설정합니다.
@@ -32,7 +34,7 @@ int main(int argc, char* argv[]) {
 	g_last_time_ms = SDL_GetTicks();
 
 	Uint32 last_move_time = SDL_GetTicks(); // 뱀이 마지막으로 움직인 시간
-	Uint32 move_interval = 200; // 뱀 200밀리초마다 움직임
+	Uint32 move_interval = 150; // 뱀 200밀리초마다 움직임
 
 	while (g_flag_running) {
 

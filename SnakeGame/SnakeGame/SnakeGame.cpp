@@ -1,27 +1,53 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "SnakeGame.h"
 
+
 void SnakeGame::UpdateScoreTexture()
 {
-
     if (snake_length != 0)
     {
         SDL_DestroyTexture(snake_length);		// !!!중요!!!  이미 생성되어있는 texture 가 있으면 반드시 메모리에서 지워야한다. !!!
         snake_length = 0;
     }
 
-    sprintf(text, u8"%05d", snake->getSnakeLength()); // 문자열 포맷을 사용하여 text에 문자열을 생성합니다.
+    sprintf(text, u8"%03d", snake->getSnakeLength()); // 문자열 포맷을 사용하여 text에 문자열을 생성합니다.
 
     SDL_Surface* tmp_surface = TTF_RenderUTF8_Blended(fontK, text, { 255,255,255 });
 
-    snake_length_rect.x = screenWidth-100;
-    snake_length_rect.y = 50;
-    snake_length_rect.w = tmp_surface->w;
-    snake_length_rect.h = tmp_surface->h;
+    snake_length_rect.x = screenWidth-GRID*3;
+    snake_length_rect.y = GRID*4;
+    snake_length_rect.w = GRID*2;
+    snake_length_rect.h = GRID;
 
     snake_length = SDL_CreateTextureFromSurface(g_renderer, tmp_surface);
     SDL_FreeSurface(tmp_surface);
 
+}
+
+void SnakeGame::UpdateTimeTexture(int ms)
+{
+    if (text_time != 0)
+    {
+        SDL_DestroyTexture(text_time);		// !!!중요!!!  이미 생성되어있는 texture 가 있으면 반드시 메모리에서 지워야한다. !!!
+        text_time = 0;
+    }
+
+    int seconds = ms / 1000;
+    int minutes = seconds / 60;
+    seconds %= 60;
+
+    char timeStr[6];
+    sprintf(timeStr, "%02d:%02d", minutes, seconds);
+
+    SDL_Surface* tmp_surface = TTF_RenderText_Blended(fontK, timeStr, { 255,255,255 });
+    text_time_rect.x = screenWidth - GRID * 3 - GRID / 2;
+    text_time_rect.y = screenHeight - GRID * 3;
+    text_time_rect.w = GRID * 3;
+    text_time_rect.h = GRID * 2;
+
+    text_time = SDL_CreateTextureFromSurface(g_renderer, tmp_surface);
+
+    SDL_FreeSurface(tmp_surface);
 }
 
 
@@ -90,16 +116,16 @@ SnakeGame::SnakeGame() {
     SDL_FreeSurface(bg_sheet_surface);//해제 필수
     bg_destination_rect.x = GRID;
     bg_destination_rect.y = GRID;
-    bg_destination_rect.w = screenWidth-GRID*2;
+    bg_destination_rect.w = screenWidth-GRID*5;
     bg_destination_rect.h = screenHeight-GRID*2;
     
     //3. 폰트 가져오기
     //폰트 소스 호출
-    fontK=TTF_OpenFont("../../Resources/Pretendard-Bold.ttf", 100);
+    fontK=TTF_OpenFont("../../Resources/establish Retrosans.ttf", 100);
     //3.1 ready 텍스쳐 만들기
-    SDL_Surface * tmp_surface = TTF_RenderUTF8_Blended(fontK, u8"Ready", {255,255,255});
-    read_rect.x = (screenWidth - tmp_surface->w) / 2;
-    read_rect.y = (screenHeight - tmp_surface->h) / 2;
+    SDL_Surface * tmp_surface = TTF_RenderUTF8_Blended(fontK, u8"Ready", {0,0,0});
+    read_rect.x = (GRID+bg_destination_rect.w - tmp_surface->w) / 2;
+    read_rect.y = (GRID+bg_destination_rect.h - tmp_surface->h) / 2;
     read_rect.w = tmp_surface->w;
     read_rect.h = tmp_surface->h;
     ready = SDL_CreateTextureFromSurface(g_renderer, tmp_surface);
@@ -107,15 +133,23 @@ SnakeGame::SnakeGame() {
 
     //3.2 game over 텍스쳐 만들기
     tmp_surface = TTF_RenderUTF8_Blended(fontK, u8"Game Over", { 0,0,0 });
-    over_rect.x = (screenWidth - tmp_surface->w) / 2;
-    over_rect.y = (screenHeight - tmp_surface->h) / 2;
+    over_rect.x = (GRID+bg_destination_rect.w - tmp_surface->w) / 2+bg_destination_rect.x;
+    over_rect.y = (GRID+bg_destination_rect.h - tmp_surface->h) / 2;
     over_rect.w = tmp_surface->w;
     over_rect.h = tmp_surface->h;
     over = SDL_CreateTextureFromSurface(g_renderer, tmp_surface);
     SDL_FreeSurface(tmp_surface);
 
+    //3.3 score 텍스쳐
+    tmp_surface = TTF_RenderUTF8_Blended(fontK, u8"SCORE", { 255,255,255 });
+    snake_score_rect.x = screenWidth - GRID * 3 - GRID / 2;
+    snake_score_rect.y = GRID;
+    snake_score_rect.w = GRID*3;
+    snake_score_rect.h = GRID*2;
+    snake_score = SDL_CreateTextureFromSurface(g_renderer, tmp_surface);
+    SDL_FreeSurface(tmp_surface);
 
-    //뱀 길이 숫자 출력 텍스쳐
+    //3.4 뱀 길이 숫자 출력 텍스쳐
     UpdateScoreTexture();
     
 
@@ -123,26 +157,16 @@ SnakeGame::SnakeGame() {
     snakeGame_running = 0;
     stop = true;
     s_state = -1;//방향키 안 누름
-
+    //4. 시간 초기화
+    time_ms_ = 0;
+    UpdateTimeTexture(time_ms_);
     
-}
-
-SnakeGame::~SnakeGame() {
-    //이미지 텍스쳐 해제
-    SDL_DestroyTexture(item_texture);
-    SDL_DestroyTexture(snake_texture);
-    SDL_DestroyTexture(snakeHead_texture);
-    SDL_DestroyTexture(bg_texture);
-    //폰트 텍스쳐 해제
-    SDL_DestroyTexture(ready);
-    SDL_DestroyTexture(over);
-    SDL_DestroyTexture(snake_length);
 }
 
 void SnakeGame::Render() {
     //std::cout << "render" << std::endl;
     //// 1. 배경 그리기.
-    // Background
+    SDL_RenderClear(g_renderer); //검정으로 초기화
     SDL_RenderCopy(g_renderer, bg_texture, NULL, &bg_destination_rect);
 
     //// 2. 아이템 그리기
@@ -183,14 +207,20 @@ void SnakeGame::Render() {
         }
     }
 
-    //길이 업데이트
+    
+    //점수 텍스쳐
     UpdateScoreTexture();
+    SDL_RenderCopy(g_renderer, snake_score, NULL, &snake_score_rect);
+    SDL_RenderCopy(g_renderer, snake_length, NULL, &snake_length_rect);
 
     if (snakeGame_running == 0) {
         SDL_RenderCopy(g_renderer, ready, NULL, &read_rect);
     }else if(snakeGame_running == 2) {
         SDL_RenderCopy(g_renderer, over, NULL, &over_rect);
     }
+    
+    UpdateTimeTexture(time_ms_);
+    SDL_RenderCopy(g_renderer, text_time, NULL, &text_time_rect);
 
     SDL_RenderPresent(g_renderer);
 }
@@ -202,20 +232,30 @@ void SnakeGame::Update() {
     //1. snake & item 업데이트
     snake->setDirection(s_state); 
     
-    snake->move();
+    
     //1.1 snake가 item과 충돌했다면
-    if (snake->isCollidingItem(item)) {
+    if (snake->isCollidingItem(item,s_state)) {
         snake->eatItem(item->getItemPower());//길이 증가
         item->spawn(snake->getSnakeList()); //item 위치 리스폰
     }
     //1.2 snake가 자신의 몸과 충돌했다면
-    if (snake->isCollidingSelf())
+    if (snake->isCollidingSelf(s_state))
         snakeGame_running = 2;
     //1.3 snake가 벽과 충돌했다면
-    if (snake->isColldingWall())
+    if (snake->isColldingWall(s_state))
         snakeGame_running = 2;
 
+    if (snakeGame_running != 2)
+        snake->move();
+    //시간 업데이트
+    static Uint32 last_ticks = SDL_GetTicks(); // !중요! static 으로 선언한 이유 확일 할 것.
+    Uint32 current_ticks = SDL_GetTicks();
+
+    time_ms_ += current_ticks - last_ticks;
+    UpdateTimeTexture(time_ms_);	// 업데이트 된 시간(time_ms_)을 문자로 변환한 후 texture로 만든다.
     
+
+    last_ticks = current_ticks;
 }
 
 void SnakeGame::HandleEvents() {
@@ -281,5 +321,24 @@ void SnakeGame::Reset() {
     //item 재배치
     item->spawn(snake->getSnakeList());
     UpdateScoreTexture();
+
+    //time 초기화
+    time_ms_ = 0;
+    UpdateTimeTexture(time_ms_);
 }
 
+
+SnakeGame::~SnakeGame() {
+    //이미지 텍스쳐 해제
+    SDL_DestroyTexture(item_texture);
+    SDL_DestroyTexture(snake_texture);
+    SDL_DestroyTexture(snakeHead_texture);
+    SDL_DestroyTexture(bg_texture);
+    //폰트 텍스쳐 해제
+    SDL_DestroyTexture(ready);
+    SDL_DestroyTexture(over);
+    SDL_DestroyTexture(snake_length);
+    SDL_DestroyTexture(snake_score);
+    SDL_DestroyTexture(text_time);
+
+}

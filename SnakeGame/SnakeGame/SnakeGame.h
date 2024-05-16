@@ -1,5 +1,7 @@
 #pragma once
 #include "Snake.h"
+#include <atlstr.h>
+#include <string>
 
 class SnakeGame
 {
@@ -12,7 +14,11 @@ public:
 	void Render();
 	void Reset();
 
+	//점수 텍스쳐 갱신 함수
 	void UpdateScoreTexture();
+	//시간 갱신 함수
+	void UpdateTimeTexture(int ms);
+
 
 	int getRunning() {
 		return snakeGame_running;
@@ -21,6 +27,7 @@ public:
 private:
 	//게임 시작 및 종료 판단
 	int snakeGame_running; //0-게임 시작 전 / 1-게임 중 / 2-게임오버
+	int time_ms_;
 
 	//객체 변수
 	Snake* snake;
@@ -31,6 +38,7 @@ private:
 	bool stop;//정지 정보
 
 
+	////이미지 변수 -------------------------
 	//아이템 이미지 변수
 	SDL_Texture* item_texture; // the SDL_Texture 
 	SDL_Rect item_source_rect; // the rectangle for source image
@@ -49,7 +57,7 @@ private:
 	SDL_Rect bg_destination_rect;
 	SDL_Texture* bg_texture;
 
-	//폰트 변수
+	////폰트 변수 --------------------------------
 	TTF_Font* fontK;
 
 	//ready랑 gameover 출력 텍스쳐
@@ -61,6 +69,13 @@ private:
 	//뱀 길이 숫자 출력 텍스쳐
 	SDL_Texture* snake_length; //int형 뱀 길이 출력
 	SDL_Rect snake_length_rect;
+	SDL_Texture* snake_score; //int형 뱀 길이 출력
+	SDL_Rect snake_score_rect;
+	
+	//게임 시간 출력 텍스쳐
+	SDL_Texture* text_time;
+	SDL_Rect text_time_rect;
+
 
 	//지난 시간 텍스쳐
 	char text[10]; // 적당한 크기의 문자열 버퍼를 할당합니다.
