@@ -26,6 +26,26 @@ typedef struct Node {
 	int y;
 }Node;
 
+bool checkXY(int x, int y, list<Node*> snakeList);
+
+class Monster { //뱀이랑 충돌하면 뱀 몸통 하나 삭제.
+private:
+	//랜덤하게 설정된 위치에서 좌우 혹은 위아래로 움직임
+	int x;
+	int y;
+	int direction;
+	int mainX;
+
+public:
+	Monster(list<Node*> snakeList);
+	~Monster();
+
+	int getX() { return x; }
+	int getY() { return y; }
+
+	void move();
+};
+
 class Item {
 private:
 	int x;
@@ -48,7 +68,7 @@ public:
 	int getItemPower() {
 		return itemPower;
 	}
-	const bool checkXY(int x, int y, list<Node*> snakeList);
+	
 	void spawn(list<Node*> snakeList);
 };
 
@@ -59,7 +79,8 @@ private:
 	int direction;
 	Node* prevNode;
 	Node* temp;
-
+	bool isFaceMonster;
+	
 public:
 	Snake();
 	~Snake();
@@ -74,13 +95,23 @@ public:
 	Node* getSnakeHead() {
 		return snakeList.front();
 	}
+	bool getIsFaceMonster() {
+		return isFaceMonster;
+	}
+	
 	
 	//set
 	void setDirection(int direction) {
 		this->direction = direction;
 	}
+	void setIsFaceMonster(bool set) {
+		isFaceMonster = set;
+	}
+	
+
 	void eatItem(int itemPower);
 	void move();
+	void decreaseLength();
 	
 	Node* nextCoordinate(int dircetion);
 	//아이템 획득 여부 확인 메서드
@@ -88,5 +119,7 @@ public:
 	//자신의 몸과 충돌했는지 확인
 	bool isCollidingSelf(int direction);
 	//벽과 충돌했는지 확인
-	bool isColldingWall(int direction);
+	bool isCollidingWall(int direction);
+	//몬스터와 충돌했는지 확인
+	bool isCollidingMonster(Monster* monster, int direction);
 };

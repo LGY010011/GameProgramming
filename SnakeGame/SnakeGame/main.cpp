@@ -9,6 +9,10 @@ Uint32 g_last_time_ms;
 SDL_Renderer* g_renderer;
 SDL_Window* window;
 
+// 대쉬 속도와 일반 속도를 정의합니다.
+const int DASH_SPEED = 100; // 대쉬 속도
+const int NORMAL_SPEED = 150; // 일반 속도
+Uint32 move_interval = NORMAL_SPEED; // 뱀이 움직이는 간격
 
 int screenWidth, screenHeight;
 
@@ -34,7 +38,6 @@ int main(int argc, char* argv[]) {
 	g_last_time_ms = SDL_GetTicks();
 
 	Uint32 last_move_time = SDL_GetTicks(); // 뱀이 마지막으로 움직인 시간
-	Uint32 move_interval = 150; // 뱀 200밀리초마다 움직임
 
 	while (g_flag_running) {
 
@@ -44,11 +47,13 @@ int main(int argc, char* argv[]) {
 			continue;
 		
 		game->HandleEvents();
+
 		// 일정 시간이 지난 후에만 뱀을 움직입니다.
 		if (cur_time_ms - last_move_time >= move_interval) {
 			game->Update();
 			last_move_time = cur_time_ms;
 		}
+
 		game->Render();
 
 		g_last_time_ms = cur_time_ms;

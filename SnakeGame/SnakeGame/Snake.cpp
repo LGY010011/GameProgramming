@@ -2,6 +2,45 @@
 
 default_random_engine generator;
 
+bool checkXY(int x, int y, list<Node*> snakeList) {
+    bool is = false; //충돌 안 함으로 초기화
+
+    // snake의 모든 노드를 돌며 확인해야 함
+    for (const auto& node : snakeList) {
+        // 만약 부딪혔으면 true 반환
+        if ((node->x == x) && (node->y == y)) {
+            is = true;
+            break;
+        }
+    }
+
+    return is;
+}
+
+//monster 메서드 구현 --------------------------------- 
+Monster::Monster(list<Node*> snakeList) {
+    uniform_int_distribution<int> distributionX(2, screenWidth / GRID - 2 - 5);
+    uniform_int_distribution<int> distributionY(1, screenHeight / GRID - 2 - 5 -1);
+
+    do {
+        mainX = distributionX(generator) * GRID;
+        y = distributionY(generator) * GRID;
+    } while (checkXY(mainX, y, snakeList)); //만약 새로 할당한 좌표가 snake의 좌표 중에 있다면 다시 반복
+    x = mainX;
+    direction = -1;//왼쪽으로 시작
+}
+
+Monster::~Monster() {
+}
+
+void Monster::move() {
+    x += direction * GRID;
+    if (x < mainX - GRID * 5 || x > mainX + GRID * 5) {
+        direction *= -1; // 방향을 바꿉니다.
+    }
+}
+
+
 //Item 메서드 구현 -----------------------------------
 Item::Item(list<Node*> snakeList) {
     std::cout << "아이템 객체 생성" << std::endl;
@@ -19,20 +58,7 @@ Item::Item(list<Node*> snakeList) {
 }
 
 
-const bool Item::checkXY(int x,int y, list<Node*> snakeList) {
-    bool is = false; //충돌 안 함으로 초기화
 
-    // snake의 모든 노드를 돌며 확인해야 함
-    for (const auto& node : snakeList) {
-        // 만약 부딪혔으면 true 반환
-        if ((node->x == x) && (node->y == y)) {
-            is = true;
-            break;
-        }
-    }
-
-    return is;
-}
 
 
 void Item::spawn(list<Node*> snakeList) {
@@ -64,8 +90,9 @@ Snake::Snake() {
     //cout << newNode->x << ", " << newNode->y << endl;
     snakeList.push_front(newNode);
 
-    prevNode = NULL;
-    temp = NULL;
+    prevNode = NULL; //이전 노드
+    temp = NULL; //임시 노드
+    isFaceMonster = false;
 }
 
 Node* Snake::nextCoordinate(int dircetion) {
@@ -107,7 +134,6 @@ bool Snake::isCollidingItem(Item* item,int direction) {
 
 // 자신의 몸과 충돌했는지 확인
 bool Snake::isCollidingSelf(int direction) {
-
     Node* head = nextCoordinate(direction);
     for (auto it = next(snakeList.begin()); it != snakeList.end(); ++it) {
         if (head->x == (*it)->x && head->y == (*it)->y) {
@@ -119,12 +145,25 @@ bool Snake::isCollidingSelf(int direction) {
 }
 
 // 벽과 충돌했는지 확인
-bool Snake::isColldingWall(int direction) {
+bool Snake::isCollidingWall(int direction) {
     temp = nextCoordinate(direction);
 
     // 다음 위치가 벽과 충돌하는지 확인
     return temp->x < 0+GRID || temp->x >= screenWidth-GRID*4 
         || temp->y < 0+GRID || temp->y >= screenHeight-GRID;
+}
+
+bool Snake::isCollidingMonster(Monster* monster,int direction) {
+    //snake의 머리와 부딪히면 충돌로 판단
+    Node* head = nextCoordinate(direction); // 뱀의 머리가 다음에 이동할 위치를 계산합니다.
+
+    // 그 위치가 몬스터의 위치와 같은지 확인합니다.
+    if (head->x == monster->getX() && head->y == monster->getY()) {
+        return true; // 뱀의 머리와 몬스터가 같은 위치에 있다면 충돌
+    }
+
+    delete head;
+    return false;
 }
 
 void Snake::eatItem(int itemPower) {
@@ -175,6 +214,13 @@ void Snake::move() {
         delete prevNode;
     prevNode = snakeList.back();
     snakeList.pop_back();
+}
+
+void Snake::decreaseLength() {
+    if (!snakeList.empty()) {
+        snakeList.pop_back();
+        snakeLength -= 1;
+    }
 }
 
 Snake::~Snake() {
