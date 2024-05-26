@@ -1,6 +1,7 @@
 #include "Snake.h"
 
-default_random_engine generator;
+
+default_random_engine generator(static_cast<unsigned long>(time(0)));
 
 bool checkXY(int x, int y, list<Node*> snakeList) {
     bool is = false; //충돌 안 함으로 초기화
@@ -23,21 +24,55 @@ Monster::Monster(list<Node*> snakeList) {
     uniform_int_distribution<int> distributionY(1, screenHeight / GRID - 2 - 5 -1);
 
     do {
-        mainX = distributionX(generator) * GRID;
+        x = distributionX(generator) * GRID;
         y = distributionY(generator) * GRID;
-    } while (checkXY(mainX, y, snakeList)); //만약 새로 할당한 좌표가 snake의 좌표 중에 있다면 다시 반복
-    x = mainX;
-    direction = -1;//왼쪽으로 시작
+    } while (checkXY(x, y, snakeList)); //만약 새로 할당한 좌표가 snake의 좌표 중에 있다면 다시 반복
+
+    uniform_int_distribution<int> distribution(0, 3);
+    direction = distribution(generator);
 }
 
 Monster::~Monster() {
 }
 
 void Monster::move() {
-    x += direction * GRID;
-    if (x < mainX - GRID * 5 || x > mainX + GRID * 5) {
-        direction *= -1; // 방향을 바꿉니다.
+    switch (direction) {
+    case 0: // 왼쪽으로 이동
+        x -= GRID;
+        break;
+    case 1: // 오른쪽으로 이동
+        x += GRID;
+        break;
+    case 2: // 위로 이동
+        y -= GRID;
+        break;
+    case 3: // 아래로 이동
+        y += GRID;
+        break;
     }
+
+    // 벽에 닿았는지 확인하고, 닿았다면 방향을 바꿉니다.
+    
+    if (x <= GRID) {
+        x = GRID;
+        direction = 1; // 오른쪽으로 방향을 바꿉니다.
+    }
+    else if (x >= screenWidth - GRID * 5) {
+        x = screenWidth - GRID * 5;
+        direction = 0; // 왼쪽으로 방향을 바꿉니다.
+    }
+    else if (y <= GRID) {
+        y = GRID;
+        direction = 3; // 아래로 방향을 바꿉니다.
+    }
+    else if (y >= screenHeight - GRID*2) {
+        y = screenHeight - GRID*2;
+        direction = 2; // 위로 방향을 바꿉니다.
+    }
+}
+
+int Monster::nextCoordinate() {
+    return x + direction * GRID;
 }
 
 
@@ -75,8 +110,6 @@ void Item::spawn(list<Node*> snakeList) {
 Item::~Item() {
     
 }
-
-
 
 //Snake 메서드 구현---------------------------------------------------------------
 
@@ -124,23 +157,25 @@ Node* Snake::nextCoordinate(int dircetion) {
 
 // 아이템 획득 여부 확인 메서드
 bool Snake::isCollidingItem(Item* item,int direction) {
-    Node* head = nextCoordinate(direction); //snake 헤드 다음 위치 계산
-    if (head->x == item->getX() && head->y == item->getY()) {
+    temp = nextCoordinate(direction); //snake 헤드 다음 위치 계산
+    if (temp->x == item->getX() && temp->y == item->getY()) {
+        //delete temp;
         return true; // 아이템과 머리가 같은 위치에 있다면 충돌
     }
-    delete head;
+    //delete head;
     return false;
 }
 
 // 자신의 몸과 충돌했는지 확인
 bool Snake::isCollidingSelf(int direction) {
-    Node* head = nextCoordinate(direction);
+    temp = nextCoordinate(direction);
     for (auto it = next(snakeList.begin()); it != snakeList.end(); ++it) {
-        if (head->x == (*it)->x && head->y == (*it)->y) {
+        if (temp->x == (*it)->x && temp->y == (*it)->y) {
+           // delete head;
             return true; // 머리와 몸통의 어느 부분이라도 같은 위치에 있다면 충돌
         }
     }
-    delete head;
+    //delete head;
     return false;
 }
 
@@ -152,17 +187,20 @@ bool Snake::isCollidingWall(int direction) {
     return temp->x < 0+GRID || temp->x >= screenWidth-GRID*4 
         || temp->y < 0+GRID || temp->y >= screenHeight-GRID;
 }
-
+    
 bool Snake::isCollidingMonster(Monster* monster,int direction) {
     //snake의 머리와 부딪히면 충돌로 판단
-    Node* head = nextCoordinate(direction); // 뱀의 머리가 다음에 이동할 위치를 계산합니다.
+    //Node* head = nextCoordinate(direction); // 뱀의 머리가 다음에 이동할 위치를 계산합니다.
+    if (!snakeList.empty()) {
+        Node* head = snakeList.front();
+        // 그 위치가 몬스터의 위치와 같은지 확인합니다.
+        if (head->x == monster->getX() && head->y == monster->getY()) {
+            //delete head;
+            return true; // 뱀의 머리와 몬스터가 같은 위치에 있다면 충돌
+        }
 
-    // 그 위치가 몬스터의 위치와 같은지 확인합니다.
-    if (head->x == monster->getX() && head->y == monster->getY()) {
-        return true; // 뱀의 머리와 몬스터가 같은 위치에 있다면 충돌
+       // delete head;
     }
-
-    delete head;
     return false;
 }
 
@@ -198,7 +236,7 @@ void Snake::move() {
         newHeadY-=GRID;
         break;
     case 3:
-        newHeadY+=GRID;
+        newHeadY += GRID;
         break;
     default:
         break;
@@ -228,6 +266,7 @@ Snake::~Snake() {
     for (auto& node : snakeList) {
         delete node;
     }
+
     snakeList.clear();
 
     delete temp;

@@ -32,12 +32,17 @@ private:
 	//객체 변수
 	Snake* snake;
 	Item* item;
-	Monster* monster;
+	list<Monster*> monsterList;
 
 	//방향키 조작 변수들
 	int s_state;//현재 눌린 키 정보 == direction
 	bool stop;//정지 정보
 	Uint32 last_ticks_;
+
+	//몬스터 충돌 시간 체크 변수
+	Uint32 monsterCollisionTime;
+
+	Uint32 lastMonsterAddedTime;
 
 
 	////이미지 변수 -------------------------
@@ -50,9 +55,13 @@ private:
 	// - 헤드 이미지
 	SDL_Texture* snakeHead_texture; // the SDL_Texture 
 	SDL_Rect snakeHead_source_rect; // the rectangle for source image
+
+	SDL_Texture* snakeHead_white_texture;
 	// - 몸 이미지
 	SDL_Texture* snake_texture; // the SDL_Texture 
 	SDL_Rect snake_source_rect; // the rectangle for source image
+
+	SDL_Texture* snake_white_texture;
 
 	SDL_Rect snake_destination_rect; // for destination
 	//몬스터 이미지 변수

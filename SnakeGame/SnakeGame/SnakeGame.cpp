@@ -91,7 +91,14 @@ SnakeGame::SnakeGame() {
     snake_source_rect.w = 512;
     snake_source_rect.h = 512;
 
- 
+    snake_sheet_surface = IMG_Load("../../Resources/headWhite.png");
+    snakeHead_white_texture = SDL_CreateTextureFromSurface(g_renderer, snake_sheet_surface);
+    SDL_FreeSurface(snake_sheet_surface);//해제 필수
+
+
+    snake_sheet_surface = IMG_Load("../../Resources/snakeWhite.png");
+    snake_white_texture = SDL_CreateTextureFromSurface(g_renderer, snake_sheet_surface);
+    SDL_FreeSurface(snake_sheet_surface);//해제 필수
     
     //2.2 아이템 텍스쳐 불러오기
     item = new Item(snake->getSnakeList());
@@ -114,8 +121,9 @@ SnakeGame::SnakeGame() {
 
     //2.3 monster 텍스쳐 불러오기
     // 몬스터 객체 생성
+    for(int i = 0; i < 2; i++)
+        monsterList.push_back(new Monster(snake->getSnakeList()));
     
-    monster = new Monster(snake->getSnakeList());
     
     SDL_Surface* monster_sheet_surface = IMG_Load("../../Resources/monster.png");
     std::cout << "monster 이미지 로드" << std::endl;
@@ -200,7 +208,8 @@ SnakeGame::SnakeGame() {
     time_ms_ = 0;
     //UpdateTimeTexture(time_ms_);
     SDL_SetTextureBlendMode(bg_texture, SDL_BLENDMODE_BLEND);
-
+    monsterCollisionTime = 0;
+    //lastMonsterAddedTime = SDL_GetTicks(); // 게임 시작
     
 }
 
@@ -216,25 +225,17 @@ void SnakeGame::Render() {
     SDL_RenderCopy(g_renderer, item_texture, NULL, &item_destination_rect);
     
     //// 몬스터 그리기
-    
-    monster_destination_rect.x = monster->getX(); // 그려질 좌표 지정
-    monster_destination_rect.y = monster->getY();
-    SDL_RenderCopy(g_renderer, monster_texture, NULL, &monster_destination_rect);
+    for(auto& monster : monsterList){
+		monster_destination_rect.x = monster->getX(); // 그려질 좌표 지정
+		monster_destination_rect.y = monster->getY();
+		SDL_RenderCopy(g_renderer, monster_texture, NULL, &monster_destination_rect);
+	}
     
 
     //// 3. 뱀 그리기
     //충돌 여부로 색상 설정
     // 뱀이 몬스터와 충돌했을 경우 뱀을 흰색으로 그립니다.
-    if (snake->getIsFaceMonster()) {
-        SDL_SetTextureColorMod(snakeHead_texture, 255, 255, 255); // 흰색으로 설정
-        SDL_SetTextureColorMod(snake_texture, 255, 255, 255); // 흰색으로 설정
-        cout << "흰색으로 출력"<<endl;
-        
-    }
-    else {
-        SDL_SetTextureColorMod(snakeHead_texture, 0, 0, 0);
-        SDL_SetTextureColorMod(snake_texture, 0, 0, 0);
-    }
+
     auto snakeList = snake->getSnakeList();
     for (auto it = snakeList.begin(); it != snakeList.end(); ++it) {
         snake_destination_rect.x = (*it)->x; // 그려질 좌표 지정
@@ -242,30 +243,44 @@ void SnakeGame::Render() {
 
         // 뱀의 헤드 노드인 경우에는 헤드 이미지를 사용하고, 그렇지 않은 경우에는 기존의 뱀 이미지를 사용합니다.
         if (it == snakeList.begin()) {
-
+            int angle = 0;
             switch (s_state) {
             case 0://좌
-                SDL_RenderCopyEx(g_renderer, snakeHead_texture, NULL, &snake_destination_rect, -90, NULL, SDL_FLIP_NONE);
+                angle = -90;
                 break;
             case 1://우
-                SDL_RenderCopyEx(g_renderer, snakeHead_texture, NULL, &snake_destination_rect, 90, NULL, SDL_FLIP_NONE);
+                angle = 90;
                 break;
             case -1:
             case 2://위
-                SDL_RenderCopyEx(g_renderer, snakeHead_texture, NULL, &snake_destination_rect, 0, NULL, SDL_FLIP_NONE);
+                angle = 0;
                 break;
             case 3://아래
-                SDL_RenderCopyEx(g_renderer, snakeHead_texture, NULL, &snake_destination_rect, 180, NULL, SDL_FLIP_NONE);
+                angle = 180;
                 break;
             default:
                 break;
             }
-            //SDL_RenderCopy(g_renderer, snakeHead_texture, NULL, &snake_destination_rect);
+
+            if (snake->getIsFaceMonster()) 
+                SDL_RenderCopyEx(g_renderer, snakeHead_white_texture, NULL, &snake_destination_rect, angle, NULL, SDL_FLIP_NONE);
+            else
+                SDL_RenderCopyEx(g_renderer, snakeHead_texture, NULL, &snake_destination_rect, angle, NULL, SDL_FLIP_NONE);
+
         }
         else {
-            SDL_RenderCopy(g_renderer, snake_texture, NULL, &snake_destination_rect);
+            if (snake->getIsFaceMonster()) {
+                SDL_RenderCopy(g_renderer, snake_white_texture, NULL, &snake_destination_rect);
+
+            }
+            else
+                SDL_RenderCopy(g_renderer, snake_texture, NULL, &snake_destination_rect);
         }
     }
+    //색상 복구
+    SDL_SetTextureColorMod(snakeHead_texture, 255, 255, 255);
+    SDL_SetTextureColorMod(snake_texture, 255, 255, 255);
+
     if (snakeGame_running != 1) {
         SDL_SetTextureAlphaMod(bg_texture, 127); // 50% 불투명도
         SDL_RenderCopy(g_renderer, bg_texture, NULL, &bg_destination_rect);
@@ -301,11 +316,17 @@ void SnakeGame::Update() {
         return;
     //1. snake & item 업데이트
     snake->setDirection(s_state); 
-    snake->setIsFaceMonster(false);
-    //몬스터 움직이기
-   
-    monster->move();
-    
+
+    //몬스터 추가여부
+    Uint32 currentTime = SDL_GetTicks(); // 현재 시간을 가져옵니다.
+    // 1분(60000밀리초)이 지났는지 확인합니다.
+    if (currentTime - lastMonsterAddedTime >= 60000) {
+        // 1분이 지났다면 새로운 몬스터를 추가합니다.
+        Monster* newMonster = new Monster(snake->getSnakeList());
+        monsterList.push_back(newMonster);
+
+        lastMonsterAddedTime = currentTime; // 몬스터를 추가한 시간을 업데이트합니다.
+    }
     
     //1.1 snake가 item과 충돌했다면
     if (snake->isCollidingItem(item,s_state)) {
@@ -319,16 +340,23 @@ void SnakeGame::Update() {
     if (snake->isCollidingWall(s_state))
         snakeGame_running = 2;
 
-    //1.4 snake가 몬스터와 충돌했다면 칸 하나 줄임
-    
-    if (snake->isCollidingMonster(monster, s_state)) {
 
-        if (snake->getSnakeLength() > 1) {
-            snake->decreaseLength(); // 뱀의 길이를 줄입니다.
-        }
-        snake->setIsFaceMonster(true);//몬스터 만났다고 업데이트
-    }
+    for (const auto& monster : monsterList)
+        monster->move();
     
+    // 뱀의 움직임 업데이트 후에 충돌을 확인합니다.
+    int flag = false; //중복 충돌판단 방지
+    for (const auto& monster : monsterList) {
+        if (snake->isCollidingMonster(monster, s_state)) {
+            //snakeGame_running = 2;
+            if (snake->getSnakeLength() > 1) {
+                snake->decreaseLength(); // 뱀의 길이를 줄입니다.
+            }
+            monsterCollisionTime = SDL_GetTicks();
+            snake->setIsFaceMonster(true);
+            flag = true;
+        }
+    }
 
     if (snakeGame_running == 1) {
         snake->move();
@@ -340,6 +368,28 @@ void SnakeGame::Update() {
         UpdateTimeTexture(time_ms_);	// 업데이트 된 시간(time_ms_)을 문자로 변환한 후 texture로 만든다.
 
         last_ticks_ = current_ticks;
+    }
+
+    //몬스터 충돌 체크
+    if (!flag) {
+        for (const auto& monster : monsterList) {
+            if (snake->isCollidingMonster(monster, s_state)) {
+                //snakeGame_running = 2;
+                if (snake->getSnakeLength() > 1) {
+                    snake->decreaseLength(); 
+                }
+                monsterCollisionTime = SDL_GetTicks();
+                snake->setIsFaceMonster(true);
+            }
+        }
+    }
+    
+
+
+
+    // 충돌 후 2초가 지났다면 뱀의 색상을 원래대로 돌려놓는다
+    if (snake->getIsFaceMonster() && SDL_GetTicks() - monsterCollisionTime > 2000) {
+        snake->setIsFaceMonster(false);
     }
 
 }
@@ -371,7 +421,7 @@ void SnakeGame::HandleEvents() {
                     last_ticks_ = SDL_GetTicks(); // !중요! static 으로 선언한 이유 확일 할 것.
                 }
             }
-            if (snakeGame_running == 3)
+            if (snakeGame_running == 3) //일시정지 중이면 키 이벤트 안 받음
                 break;
 
             /////방향키 다운
@@ -382,6 +432,7 @@ void SnakeGame::HandleEvents() {
                 if (snakeGame_running == 0) {
                     snakeGame_running = 1;
                     last_ticks_ = SDL_GetTicks();
+                    lastMonsterAddedTime = SDL_GetTicks(); // 게임 시작
                 }
             }
             else if (event.key.keysym.sym == SDLK_RIGHT) {
@@ -390,6 +441,7 @@ void SnakeGame::HandleEvents() {
                 if (snakeGame_running == 0) {
                     snakeGame_running = 1;
                     last_ticks_ = SDL_GetTicks();
+                    lastMonsterAddedTime = SDL_GetTicks(); // 게임 시작
                 }
             }
             else if (event.key.keysym.sym == SDLK_UP) {
@@ -398,6 +450,7 @@ void SnakeGame::HandleEvents() {
                 if (snakeGame_running == 0) {
                     snakeGame_running = 1;
                     last_ticks_ = SDL_GetTicks();
+                    lastMonsterAddedTime = SDL_GetTicks(); // 게임 시작
                 }
             }
             else if (event.key.keysym.sym == SDLK_DOWN) {
@@ -406,6 +459,7 @@ void SnakeGame::HandleEvents() {
                 if (snakeGame_running == 0) {
                     snakeGame_running = 1;
                     last_ticks_ = SDL_GetTicks();
+                    lastMonsterAddedTime = SDL_GetTicks(); // 게임 시작
                 }
             }
 
@@ -430,6 +484,19 @@ void SnakeGame::Reset() {
     //뱀 객체 삭제 했다가 재생성
     delete snake;
     snake = new Snake();
+    //몬스터 객체 삭제 했다가 재생성
+    for (const auto& mon : monsterList) {
+        delete mon;
+    }
+    monsterList.clear(); // 몬스터 리스트를 비웁니다.
+
+    
+
+    for (int i = 0;i < 2;i++) {
+        monsterList.push_back(new Monster(snake->getSnakeList()));
+    }
+    
+
     //item 재배치
     item->spawn(snake->getSnakeList());
     UpdateScoreTexture();
@@ -438,6 +505,7 @@ void SnakeGame::Reset() {
     time_ms_ = 0;
     
     UpdateTimeTexture(time_ms_);
+    //lastMonsterAddedTime = SDL_GetTicks(); // 게임 시작
 }
 
 
@@ -459,9 +527,12 @@ SnakeGame::~SnakeGame() {
     
 
     // 몬스터 객체 삭제
-    
-    delete monster;
-    
+    for (const auto& monster : monsterList) {
+        delete monster;
+    }
+    monsterList.clear(); // 몬스터 리스트를 비웁니다.
+
+
     delete item;
-    //delete snake;
+    delete snake;
 }
