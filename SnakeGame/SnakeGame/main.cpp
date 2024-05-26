@@ -10,7 +10,6 @@ SDL_Renderer* g_renderer;
 SDL_Window* window;
 
 // 대쉬 속도와 일반 속도를 정의합니다.
-const int DASH_SPEED = 100; // 대쉬 속도
 const int NORMAL_SPEED = 150; // 일반 속도
 Uint32 move_interval = NORMAL_SPEED; // 뱀이 움직이는 간격
 

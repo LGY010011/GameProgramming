@@ -6,6 +6,7 @@
 #include "SDL_image.h"
 #include "SDL_ttf.h"
 #include "iostream"
+#include <ctime> // time() 함수를 사용하기 위한 헤더
 
 #define GRID 20
 
@@ -26,6 +27,7 @@ typedef struct Node {
 	int y;
 }Node;
 
+
 bool checkXY(int x, int y, list<Node*> snakeList);
 
 class Monster { //뱀이랑 충돌하면 뱀 몸통 하나 삭제.
@@ -44,6 +46,7 @@ public:
 	int getY() { return y; }
 
 	void move();
+	int nextCoordinate();
 };
 
 class Item {
@@ -71,6 +74,7 @@ public:
 	
 	void spawn(list<Node*> snakeList);
 };
+
 
 class Snake {
 private:
@@ -120,6 +124,6 @@ public:
 	bool isCollidingSelf(int direction);
 	//벽과 충돌했는지 확인
 	bool isCollidingWall(int direction);
-	//몬스터와 충돌했는지 확인
-	bool isCollidingMonster(Monster* monster, int direction);
+	bool isCollidingMonster(Monster* monster,int direction);
+
 };
