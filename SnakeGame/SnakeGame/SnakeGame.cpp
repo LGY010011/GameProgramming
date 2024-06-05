@@ -57,7 +57,6 @@ void SnakeGame::UpdateTimeTexture(int ms)
 
 
 SnakeGame::SnakeGame() {
-    std::cout << "게임 생성" << std::endl;
     g_flag_running = true;
     
     //2. 텍스쳐 불러오기
@@ -65,7 +64,6 @@ SnakeGame::SnakeGame() {
     snake = new Snake();
 
     SDL_Surface* snakeHead_sheet_surface = IMG_Load("../../Resources/head.png");
-    std::cout << "snake 헤드 이미지 로드" << std::endl;
     snakeHead_texture = SDL_CreateTextureFromSurface(g_renderer, snakeHead_sheet_surface);
     SDL_FreeSurface(snakeHead_sheet_surface);//해제 필수
     snakeHead_source_rect.x = 0;
@@ -82,7 +80,6 @@ SnakeGame::SnakeGame() {
 
 
     SDL_Surface* snake_sheet_surface = IMG_Load("../../Resources/snake.png");
-    std::cout << "snake 이미지 로드" << std::endl;
     snake_texture = SDL_CreateTextureFromSurface(g_renderer, snake_sheet_surface);
     SDL_FreeSurface(snake_sheet_surface);//해제 필수
 
@@ -91,20 +88,10 @@ SnakeGame::SnakeGame() {
     snake_source_rect.w = 512;
     snake_source_rect.h = 512;
 
-    snake_sheet_surface = IMG_Load("../../Resources/headWhite.png");
-    snakeHead_white_texture = SDL_CreateTextureFromSurface(g_renderer, snake_sheet_surface);
-    SDL_FreeSurface(snake_sheet_surface);//해제 필수
-
-
-    snake_sheet_surface = IMG_Load("../../Resources/snakeWhite.png");
-    snake_white_texture = SDL_CreateTextureFromSurface(g_renderer, snake_sheet_surface);
-    SDL_FreeSurface(snake_sheet_surface);//해제 필수
-    
     //2.2 아이템 텍스쳐 불러오기
     item = new Item(snake->getSnakeList());
 
     SDL_Surface* item_sheet_surface = IMG_Load("../../Resources/item.png");
-    std::cout << "아이템 이미지 로드" << std::endl;
 
     item_texture = SDL_CreateTextureFromSurface(g_renderer, item_sheet_surface);
     SDL_FreeSurface(item_sheet_surface);//해제 필수
@@ -126,7 +113,6 @@ SnakeGame::SnakeGame() {
     
     
     SDL_Surface* monster_sheet_surface = IMG_Load("../../Resources/monster.png");
-    std::cout << "monster 이미지 로드" << std::endl;
     monster_texture = SDL_CreateTextureFromSurface(g_renderer, monster_sheet_surface);
     SDL_FreeSurface(monster_sheet_surface);//해제 필수
 
@@ -137,7 +123,6 @@ SnakeGame::SnakeGame() {
     //2.3 background 텍스쳐 불러오기
     //배경 이미지 변수
     SDL_Surface* bg_sheet_surface = IMG_Load("../../Resources/background.png");
-    std::cout << "배경 이미지 로드" << std::endl;
     bg_texture= SDL_CreateTextureFromSurface(g_renderer, bg_sheet_surface);
     SDL_FreeSurface(bg_sheet_surface);//해제 필수
     bg_destination_rect.x = GRID;
@@ -147,7 +132,6 @@ SnakeGame::SnakeGame() {
     
     //2.4 일시정지 텍스쳐 가져오기
     SDL_Surface* stop_sheet_surface = IMG_Load("../../Resources/stop.png");
-    std::cout << "stop 이미지 로드" << std::endl;
     stop_texture = SDL_CreateTextureFromSurface(g_renderer, stop_sheet_surface);
     SDL_FreeSurface(stop_sheet_surface);//해제 필수
 
@@ -262,19 +246,12 @@ void SnakeGame::Render() {
                 break;
             }
 
-            if (snake->getIsFaceMonster()) 
-                SDL_RenderCopyEx(g_renderer, snakeHead_white_texture, NULL, &snake_destination_rect, angle, NULL, SDL_FLIP_NONE);
-            else
-                SDL_RenderCopyEx(g_renderer, snakeHead_texture, NULL, &snake_destination_rect, angle, NULL, SDL_FLIP_NONE);
+            SDL_RenderCopyEx(g_renderer, snakeHead_texture, NULL, &snake_destination_rect, angle, NULL, SDL_FLIP_NONE);
 
         }
         else {
-            if (snake->getIsFaceMonster()) {
-                SDL_RenderCopy(g_renderer, snake_white_texture, NULL, &snake_destination_rect);
-
-            }
-            else
-                SDL_RenderCopy(g_renderer, snake_texture, NULL, &snake_destination_rect);
+            
+            SDL_RenderCopy(g_renderer, snake_texture, NULL, &snake_destination_rect);
         }
     }
     //색상 복구
@@ -319,12 +296,11 @@ void SnakeGame::Update() {
 
     //몬스터 추가여부
     Uint32 currentTime = SDL_GetTicks(); // 현재 시간을 가져옵니다.
-    // 1분(60000밀리초)이 지났는지 확인합니다.
-    if (currentTime - lastMonsterAddedTime >= 60000) {
-        // 1분이 지났다면 새로운 몬스터를 추가합니다.
+    // 30초(30000밀리초)이 지났는지 확인합니다.
+    if (currentTime - lastMonsterAddedTime >= 30000 && monsterList.size()<20) {
+        // 30초가 지났다고 20개가 안된다면 새로운 몬스터를 추가합니다.
         Monster* newMonster = new Monster(snake->getSnakeList());
         monsterList.push_back(newMonster);
-
         lastMonsterAddedTime = currentTime; // 몬스터를 추가한 시간을 업데이트합니다.
     }
     
@@ -348,13 +324,9 @@ void SnakeGame::Update() {
     int flag = false; //중복 충돌판단 방지
     for (const auto& monster : monsterList) {
         if (snake->isCollidingMonster(monster, s_state)) {
-            //snakeGame_running = 2;
-            if (snake->getSnakeLength() > 1) {
-                snake->decreaseLength(); // 뱀의 길이를 줄입니다.
-            }
-            monsterCollisionTime = SDL_GetTicks();
-            snake->setIsFaceMonster(true);
+            snakeGame_running = 2;
             flag = true;
+            break;
         }
     }
 
@@ -374,24 +346,12 @@ void SnakeGame::Update() {
     if (!flag) {
         for (const auto& monster : monsterList) {
             if (snake->isCollidingMonster(monster, s_state)) {
-                //snakeGame_running = 2;
-                if (snake->getSnakeLength() > 1) {
-                    snake->decreaseLength(); 
-                }
-                monsterCollisionTime = SDL_GetTicks();
-                snake->setIsFaceMonster(true);
+                snakeGame_running = 2;
+                break;
             }
         }
     }
     
-
-
-
-    // 충돌 후 2초가 지났다면 뱀의 색상을 원래대로 돌려놓는다
-    if (snake->getIsFaceMonster() && SDL_GetTicks() - monsterCollisionTime > 2000) {
-        snake->setIsFaceMonster(false);
-    }
-
 }
 
 void SnakeGame::HandleEvents() {
@@ -415,10 +375,12 @@ void SnakeGame::HandleEvents() {
                     // 일시정지를 시작할 때 시간을 업데이트합니다.
                     Uint32 current_ticks = SDL_GetTicks();
                     time_ms_ += current_ticks - last_ticks_;
+                    pauseStartTime = SDL_GetTicks();
                 }
                 else if (snakeGame_running == 3) {//일시정지였으면 게임 중으로
                     snakeGame_running = 1;
-                    last_ticks_ = SDL_GetTicks(); // !중요! static 으로 선언한 이유 확일 할 것.
+                    last_ticks_ = SDL_GetTicks(); 
+                    lastMonsterAddedTime += SDL_GetTicks() - pauseStartTime; // 일시정지 시간만큼 더해줍니다.
                 }
             }
             if (snakeGame_running == 3) //일시정지 중이면 키 이벤트 안 받음
@@ -521,6 +483,7 @@ SnakeGame::~SnakeGame() {
     //폰트 텍스쳐 해제
     SDL_DestroyTexture(ready);
     SDL_DestroyTexture(over);
+    SDL_DestroyTexture(readme);
     SDL_DestroyTexture(snake_length);
     SDL_DestroyTexture(snake_score);
     SDL_DestroyTexture(text_time);

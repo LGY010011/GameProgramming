@@ -1,0 +1,147 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="소스 파일\Stage1">
+      <UniqueIdentifier>{e4b8b474-4fcd-4315-8d93-911a61d3c995}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Stage2">
+      <UniqueIdentifier>{4cf56dd3-e538-4999-8f71-e5c2338ffa90}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\Stage3">
+      <UniqueIdentifier>{3b6d5f7c-b6d6-4ba0-ae48-6f19011dff10}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Stage1">
+      <UniqueIdentifier>{779119e8-f4df-4bcc-b80f-6e9cb7e1ded2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Stage2">
+      <UniqueIdentifier>{771a3710-6f94-43a5-9e21-25fce69d36f4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Stage3">
+      <UniqueIdentifier>{34123766-434b-490c-8557-53b2c72d7f19}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Creature_stage1.cpp">
+      <Filter>소스 파일\Stage1</Filter>
+    </ClCompile>
+    <ClCompile Include="Creature_stage3.cpp">
+      <Filter>소스 파일\Stage3</Filter>
+    </ClCompile>
+    <ClCompile Include="Creature_stage2.cpp">
+      <Filter>소스 파일\Stage2</Filter>
+    </ClCompile>
+    <ClCompile Include="Phase_stage3.cpp">
+      <Filter>소스 파일\Stage3</Filter>
+    </ClCompile>
+    <ClCompile Include="Phase_stage3Intro.cpp">
+      <Filter>소스 파일\Stage3</Filter>
+    </ClCompile>
+    <ClCompile Include="Phase_stage3Ending.cpp">
+      <Filter>소스 파일\Stage3</Filter>
+    </ClCompile>
+    <ClCompile Include="Phase_stage2.cpp">
+      <Filter>소스 파일\Stage2</Filter>
+    </ClCompile>
+    <ClCompile Include="Phase_stage2Intro.cpp">
+      <Filter>소스 파일\Stage2</Filter>
+    </ClCompile>
+    <ClCompile Include="Phase_stage2Ending.cpp">
+      <Filter>소스 파일\Stage2</Filter>
+    </ClCompile>
+    <ClCompile Include="Phase_stage1.cpp">
+      <Filter>소스 파일\Stage1</Filter>
+    </ClCompile>
+    <ClCompile Include="Phase_stage1Intro.cpp">
+      <Filter>소스 파일\Stage1</Filter>
+    </ClCompile>
+    <ClCompile Include="Phase_stage1Ending.cpp">
+      <Filter>소스 파일\Stage1</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Phase_Ending.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Phase_Gallery.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Phase_Intro.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="PhaseManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Creature.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Phase_Ending.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Phase_Gallery.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Phase_Intro.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Creature_stage1.h">
+      <Filter>헤더 파일\Stage1</Filter>
+    </ClInclude>
+    <ClInclude Include="Creature_stage3.h">
+      <Filter>헤더 파일\Stage3</Filter>
+    </ClInclude>
+    <ClInclude Include="Creature_stage2.h">
+      <Filter>헤더 파일\Stage2</Filter>
+    </ClInclude>
+    <ClInclude Include="Phase_Stage1Ending.h">
+      <Filter>헤더 파일\Stage1</Filter>
+    </ClInclude>
+    <ClInclude Include="Phase_Stage1Intro.h">
+      <Filter>헤더 파일\Stage1</Filter>
+    </ClInclude>
+    <ClInclude Include="Phase_stage1Game.h">
+      <Filter>헤더 파일\Stage1</Filter>
+    </ClInclude>
+    <ClInclude Include="Phase_stage2Ending.h">
+      <Filter>헤더 파일\Stage2</Filter>
+    </ClInclude>
+    <ClInclude Include="Phase_stage2Game.h">
+      <Filter>헤더 파일\Stage2</Filter>
+    </ClInclude>
+    <ClInclude Include="Phase_stage2Intro.h">
+      <Filter>헤더 파일\Stage2</Filter>
+    </ClInclude>
+    <ClInclude Include="Phase_stage3Ending.h">
+      <Filter>헤더 파일\Stage3</Filter>
+    </ClInclude>
+    <ClInclude Include="Phase_stage3Game.h">
+      <Filter>헤더 파일\Stage3</Filter>
+    </ClInclude>
+    <ClInclude Include="Phase_stage3Intro.h">
+      <Filter>헤더 파일\Stage3</Filter>
+    </ClInclude>
+    <ClInclude Include="STAGE.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

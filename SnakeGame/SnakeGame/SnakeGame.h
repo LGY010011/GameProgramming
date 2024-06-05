@@ -44,6 +44,8 @@ private:
 
 	Uint32 lastMonsterAddedTime;
 
+	//일시정지 체크 변수
+	Uint32 pauseStartTime = 0;
 
 	////이미지 변수 -------------------------
 	//아이템 이미지 변수
@@ -56,12 +58,10 @@ private:
 	SDL_Texture* snakeHead_texture; // the SDL_Texture 
 	SDL_Rect snakeHead_source_rect; // the rectangle for source image
 
-	SDL_Texture* snakeHead_white_texture;
 	// - 몸 이미지
 	SDL_Texture* snake_texture; // the SDL_Texture 
 	SDL_Rect snake_source_rect; // the rectangle for source image
 
-	SDL_Texture* snake_white_texture;
 
 	SDL_Rect snake_destination_rect; // for destination
 	//몬스터 이미지 변수

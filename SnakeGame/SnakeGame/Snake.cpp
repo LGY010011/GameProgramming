@@ -78,7 +78,7 @@ int Monster::nextCoordinate() {
 
 //Item 메서드 구현 -----------------------------------
 Item::Item(list<Node*> snakeList) {
-    std::cout << "아이템 객체 생성" << std::endl;
+   
     //랜덤하게 위치 설정하는데 snake랑 겹치면 안됨
     uniform_int_distribution<int> distributionX(1, screenWidth / GRID - 2 -5);//0~8까지의 난수
     uniform_int_distribution<int> distributionY(1, screenHeight / GRID - 2 -5); //0~7까지의 난수
@@ -114,7 +114,6 @@ Item::~Item() {
 //Snake 메서드 구현---------------------------------------------------------------
 
 Snake::Snake() {
-    std::cout << "뱀 객체 생성" << std::endl;
     direction = 4; //4는 정지
     Node* newNode = new Node;
     snakeLength = 1; //뱀 초기 길이는 1로 설정
@@ -191,17 +190,23 @@ bool Snake::isCollidingWall(int direction) {
 bool Snake::isCollidingMonster(Monster* monster,int direction) {
     //snake의 머리와 부딪히면 충돌로 판단
     //Node* head = nextCoordinate(direction); // 뱀의 머리가 다음에 이동할 위치를 계산합니다.
-    if (!snakeList.empty()) {
-        Node* head = snakeList.front();
-        // 그 위치가 몬스터의 위치와 같은지 확인합니다.
-        if (head->x == monster->getX() && head->y == monster->getY()) {
-            //delete head;
-            return true; // 뱀의 머리와 몬스터가 같은 위치에 있다면 충돌
-        }
-
-       // delete head;
+    temp = nextCoordinate(direction);
+    if (temp->x == monster->getX() && temp->y == monster->getY()) {
+        //delete head;
+        return true; // 뱀의 머리와 몬스터가 같은 위치에 있다면 충돌
     }
     return false;
+
+    //if (!snakeList.empty()) {
+    //    Node* head = snakeList.front();
+    //    // 그 위치가 몬스터의 위치와 같은지 확인합니다.
+    //    if (head->x == monster->getX() && head->y == monster->getY()) {
+    //        //delete head;
+    //        return true; // 뱀의 머리와 몬스터가 같은 위치에 있다면 충돌
+    //    }
+    //   // delete head;
+    //}
+    //return false;
 }
 
 void Snake::eatItem(int itemPower) {

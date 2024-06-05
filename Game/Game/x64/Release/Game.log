@@ -1,0 +1,37 @@
+﻿  Creature_stage3.cpp
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Creature.h(78,19): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Creature_stage3.cpp(218,15): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  main.cpp
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Creature.h(78,19): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Creature_stage1.h(35,21): warning C4244: '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Creature_stage1.h(39,17): warning C4244: '+=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Creature_stage1.h(40,17): warning C4244: '+=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  PhaseManager.cpp
+  Phase_stage1.cpp
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Creature.h(78,19): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Creature_stage1.h(35,21): warning C4244: '초기화 중': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Creature_stage1.h(39,17): warning C4244: '+=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Creature_stage1.h(40,17): warning C4244: '+=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Phase_stage1.cpp(39,15): warning C4244: '인수': 'time_t'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Phase_stage1.cpp(55,24): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Phase_stage1.cpp(65,26): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Phase_stage1.cpp(516,57): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Phase_stage1.cpp(676,19): warning C4244: '초기화 중': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Phase_stage1.cpp(719,15): warning C4244: '인수': 'time_t'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Phase_stage1.cpp(735,24): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Phase_stage1.cpp(745,26): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Phase_stage1Ending.cpp
+  Phase_stage1Intro.cpp
+  Phase_stage2.cpp
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Creature.h(78,19): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Phase_stage2Ending.cpp
+  Phase_stage2Intro.cpp
+  Phase_stage3.cpp
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Creature.h(78,19): warning C4244: '인수': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\gylee\Documents\GameProgramming\Game\Game\Phase_stage3.cpp(510,36): warning C4244: '=': 'double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Phase_stage3Intro.cpp
+  코드를 생성하고 있습니다.
+  Previous IPDB not found, fall back to full compilation.
+  All 928 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  코드를 생성했습니다.
+  Game.vcxproj -> C:\Users\gylee\Documents\GameProgramming\Game\x64\Release\Game.exe
